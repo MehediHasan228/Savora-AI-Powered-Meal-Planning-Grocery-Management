@@ -6,7 +6,7 @@ import path from 'path'
 export default defineConfig(({ mode }) => ({
   plugins: [react()],
   // Use /Ai-web/ for production (GitHub Pages), but root for local dev
-  base: mode === 'production' ? '/Ai-web/' : '/',
+  base: mode === 'production' ? '/Savora-AI-Powered-Meal-Planning-Grocery-Management/' : '/',
   server: {
     host: true,
     port: 5173,

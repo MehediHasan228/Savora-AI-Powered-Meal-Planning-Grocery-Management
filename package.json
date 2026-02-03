@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
-  "homepage": "https://MehediHasan228.github.io/Ai-web/",
+  "homepage": "https://MehediHasan228.github.io/Savora-AI-Powered-Meal-Planning-Grocery-Management/",
   "scripts": {
     "dev:client": "vite",
     "dev:server": "cd server && npm run dev",

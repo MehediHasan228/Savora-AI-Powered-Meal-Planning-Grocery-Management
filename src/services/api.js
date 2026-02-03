@@ -126,7 +126,12 @@ export const systemService = {
 };
 
 // Meal Plan Services
-export const mealPlanService = {
+// Check if we are running in a demo environment (GitHub Pages)
+const isDemoMode = window.location.hostname.includes('github.io') || window.location.hostname.includes('netlify.app');
+
+import { mockMealPlanService } from './mockData';
+
+export const mealPlanService = isDemoMode ? mockMealPlanService : {
     getWeekPlan: (startDate, endDate) => api.get('/meal-plan', { params: { startDate, endDate } }),
     generateWeekPlan: (startDate) => api.post('/meal-plan/generate', { startDate }),
     updateSlot: (data) => api.put('/meal-plan/slot', data),
