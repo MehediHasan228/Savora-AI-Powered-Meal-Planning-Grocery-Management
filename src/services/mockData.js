@@ -157,6 +157,7 @@ export const mockMealPlanService = {
         });
     },
 
+
     addToGrocery: (startDate, endDate) => {
         return new Promise((resolve) => {
             setTimeout(() => {
@@ -164,4 +165,132 @@ export const mockMealPlanService = {
             }, 500);
         });
     }
+};
+
+// --- Mock Inventory ---
+const mockInventory = [
+    { id: '1', name: 'Milk', quantity: 1, unit: 'L', expiryDate: new Date(new Date().getTime() + 86400000 * 2).toISOString(), category: 'Dairy & Alternatives', status: 'Expiring Soon' },
+    { id: '2', name: 'Eggs', quantity: 6, unit: 'pcs', expiryDate: new Date(new Date().getTime() + 86400000 * 5).toISOString(), category: 'Dairy & Alternatives', status: 'Good' },
+    { id: '3', name: 'Chicken Breast', quantity: 500, unit: 'g', expiryDate: new Date(new Date().getTime() + 86400000 * 3).toISOString(), category: 'Meat & Poultry', status: 'Good' },
+    { id: '4', name: 'Rice', quantity: 2, unit: 'kg', expiryDate: new Date(new Date().getTime() + 86400000 * 100).toISOString(), category: 'Grains', status: 'Good' },
+    { id: '5', name: 'Tomatoes', quantity: 4, unit: 'pcs', expiryDate: new Date(new Date().getTime() - 86400000).toISOString(), category: 'Produce', status: 'Expired' }, // Expired
+];
+
+export const mockInventoryService = {
+    getAll: () => Promise.resolve({ data: mockInventory }),
+    create: (data) => Promise.resolve({ data: { ...data, id: generateId() } }),
+    update: (id, data) => Promise.resolve({ data: { ...data, id } }),
+    delete: (id) => Promise.resolve({ data: { message: 'Deleted' } }),
+    moveToGrocery: (id) => Promise.resolve({ data: { message: 'Moved to grocery' } }),
+    barcodeLookup: (barcode) => Promise.resolve({ data: { name: 'Scanned Item', quantity: 1, unit: 'pcs' } }),
+    getSuggestions: () => Promise.resolve({ data: ['Apples', 'Bananas', 'Bread'] }),
+};
+
+// --- Mock Grocery ---
+const mockGrocery = [
+    { id: '1', name: 'Olive Oil', qty: 1, unit: 'bottle', checked: false, category: 'Pantry' },
+    { id: '2', name: 'Salt', qty: 1, unit: 'box', checked: true, category: 'Pantry' },
+    { id: '3', name: 'Pepper', qty: 1, unit: 'shaker', checked: false, category: 'Pantry' },
+];
+
+export const mockGroceryService = {
+    getAll: () => Promise.resolve({ data: mockGrocery }),
+    create: (data) => Promise.resolve({ data: { ...data, id: generateId() } }),
+    update: (id, data) => Promise.resolve({ data: { ...data, id } }),
+    bulkAdd: (items) => Promise.resolve({ data: { message: 'Added' } }),
+    toggle: (id) => Promise.resolve({ data: { message: 'Toggled' } }),
+    delete: (id) => Promise.resolve({ data: { message: 'Deleted' } }),
+    clearCompleted: () => Promise.resolve({ data: { message: 'Cleared' } }),
+    moveToInventory: () => Promise.resolve({ data: { message: 'Moved to inventory' } }),
+    suggestCategory: (name) => Promise.resolve({ data: 'General' }),
+    togglePriority: (id) => Promise.resolve({ data: { message: 'Priority toggled' } }),
+    refresh: () => Promise.resolve({ data: { message: 'Refreshed' } }),
+};
+
+// --- Mock Recipe ---
+export const mockRecipeService = {
+    getAll: () => Promise.resolve({ data: sampleRecipes }),
+    create: (data) => Promise.resolve({ data: { ...data, id: generateId() } }),
+    update: (id, data) => Promise.resolve({ data: { ...data, id } }),
+    delete: (id) => Promise.resolve({ data: { message: 'Deleted' } }),
+};
+
+// --- Mock User ---
+export const mockUserService = {
+    getAll: () => Promise.resolve({
+        data: [
+            { id: '1', name: 'Demo User', email: 'user@demo.com', role: 'user' },
+            { id: '2', name: 'Admin User', email: 'admin@demo.com', role: 'admin' }
+        ]
+    }),
+    create: (data) => Promise.resolve({ data: { ...data, id: generateId() } }),
+    update: (id, data) => Promise.resolve({ data: { ...data, id } }),
+    resetPassword: (id, password) => Promise.resolve({ data: { message: 'Password reset' } }),
+    delete: (id) => Promise.resolve({ data: { message: 'Deleted' } }),
+};
+
+// --- Mock Admin ---
+export const mockAdminInventoryService = {
+    getSummary: () => Promise.resolve({ data: { totalItems: 50, lowStock: 5, expired: 2, totalValue: 1200 } }),
+    getTrends: () => Promise.resolve({
+        data: [
+            { date: '2023-01-01', value: 100 }, { date: '2023-01-02', value: 105 },
+            { date: '2023-01-03', value: 102 }, { date: '2023-01-04', value: 110 }
+        ]
+    }),
+};
+
+export const mockAdminGroceryService = {
+    getInsights: () => Promise.resolve({ data: { mostBought: 'Milk', totalSpent: 500, monthlyAverage: 100 } }),
+    getWaste: () => Promise.resolve({ data: { wastedItems: 5, wastedValue: 20 } }),
+};
+
+// --- Mock System & AI ---
+export const mockSystemService = {
+    getStats: () => Promise.resolve({ data: { cpu: 15, memory: 40, uptime: 123456, activeUsers: 2 } }),
+};
+
+export const mockAiService = {
+    chat: (data) => new Promise(resolve => setTimeout(() => resolve({ data: { reply: "I'm a demo AI running in the browser! I can help you plan meals or manage inventory." } }), 1000)),
+    analyzeInventory: (items) => Promise.resolve({ data: { analysis: "You have a good mix of proteins and veggies." } }),
+};
+
+// --- Mock Notifications ---
+export const mockNotificationService = {
+    getAll: () => Promise.resolve({
+        data: [
+            { id: '1', title: 'Welcome', message: 'Welcome to Savora Demo!', read: false, createdAt: new Date().toISOString() },
+            { id: '2', title: 'Low Stock', message: 'You are running low on Milk.', read: true, createdAt: new Date().toISOString() }
+        ]
+    }),
+    markRead: (id) => Promise.resolve({ data: { message: 'Marked read' } }),
+    markReadAll: () => Promise.resolve({ data: { message: 'All read' } }),
+    getSettings: () => Promise.resolve({ data: { email: true, push: false } }),
+    updateSettings: (data) => Promise.resolve({ data }),
+    sendBroadcast: (data) => Promise.resolve({ data: { message: 'Broadcast sent' } }),
+    getStats: () => Promise.resolve({ data: { total: 100, read: 80 } }),
+};
+
+// --- Mock Auth ---
+export const mockAuthService = {
+    login: (credentials) => Promise.resolve({ data: { token: 'demo-token', user: { id: '1', name: 'Demo User', role: 'admin' } } }),
+    register: (userData) => Promise.resolve({ data: { token: 'demo-token', user: { ...userData, id: '1', role: 'user' } } }),
+    getProfile: () => Promise.resolve({ data: { id: '1', name: 'Demo User', email: 'demo@example.com', role: 'admin' } }),
+    updateProfile: (data) => Promise.resolve({ data }),
+};
+
+// --- Mock Database ---
+export const mockDatabaseService = {
+    getStats: () => Promise.resolve({ data: { tables: 5, records: 150, size: '2MB' } }),
+    getTableData: (table) => Promise.resolve({ data: [] }),
+    getRecord: (table, id) => Promise.resolve({ data: {} }),
+    createRecord: (table, data) => Promise.resolve({ data }),
+    updateRecord: (table, id, data) => Promise.resolve({ data }),
+    deleteRecord: (table, id) => Promise.resolve({ data: { message: 'Deleted' } }),
+};
+
+// --- Mock External Recipe ---
+export const mockExternalRecipeService = {
+    search: (params) => Promise.resolve({ data: { results: sampleRecipes.slice(0, 5) } }),
+    getDetails: (id) => Promise.resolve({ data: sampleRecipes[0] }),
 };

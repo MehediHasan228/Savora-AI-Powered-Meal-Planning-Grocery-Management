@@ -1,5 +1,19 @@
 import axios from 'axios';
-import { mockMealPlanService } from './mockData';
+import {
+    mockMealPlanService,
+    mockInventoryService,
+    mockGroceryService,
+    mockRecipeService,
+    mockUserService,
+    mockAdminInventoryService,
+    mockAdminGroceryService,
+    mockSystemService,
+    mockAiService,
+    mockNotificationService,
+    mockAuthService,
+    mockDatabaseService,
+    mockExternalRecipeService
+} from './mockData';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
@@ -16,7 +30,6 @@ if (isDemoMode) {
 }
 
 const api = axios.create({
-    // ... (rest of file)
     baseURL: API_URL,
     headers: {
         'Content-Type': 'application/json',
@@ -38,7 +51,7 @@ api.interceptors.request.use(
 );
 
 // Inventory Services
-export const inventoryService = {
+export const inventoryService = isDemoMode ? mockInventoryService : {
     getAll: (params) => api.get('/inventory', { params }),
     create: (data) => api.post('/inventory', data),
     update: (id, data) => api.put(`/inventory/${id}`, data),
@@ -49,19 +62,19 @@ export const inventoryService = {
 };
 
 // Admin Inventory Services
-export const adminInventoryService = {
+export const adminInventoryService = isDemoMode ? mockAdminInventoryService : {
     getSummary: () => api.get('/admin/inventory/summary'),
     getTrends: () => api.get('/admin/inventory/trends'),
 };
 
 // Admin Grocery Services
-export const adminGroceryService = {
+export const adminGroceryService = isDemoMode ? mockAdminGroceryService : {
     getInsights: () => api.get('/admin/grocery/insights'),
     getWaste: () => api.get('/admin/grocery/waste'),
 };
 
 // Recipe Services
-export const recipeService = {
+export const recipeService = isDemoMode ? mockRecipeService : {
     getAll: () => api.get('/recipes'),
     create: (data) => api.post('/recipes', data),
     update: (id, data) => api.put(`/recipes/${id}`, data),
@@ -69,7 +82,7 @@ export const recipeService = {
 };
 
 // User Services
-export const userService = {
+export const userService = isDemoMode ? mockUserService : {
     getAll: () => api.get('/users'),
     create: (data) => api.post('/users', data),
     update: (id, data) => api.put(`/users/${id}`, data),
@@ -78,7 +91,7 @@ export const userService = {
 };
 
 // Grocery Services
-export const groceryService = {
+export const groceryService = isDemoMode ? mockGroceryService : {
     getAll: () => api.get('/grocery'),
     create: (data) => api.post('/grocery', data),
     update: (id, data) => api.put(`/grocery/${id}`, data),
@@ -93,7 +106,7 @@ export const groceryService = {
 };
 
 // Auth Services
-export const authService = {
+export const authService = isDemoMode ? mockAuthService : {
     login: (credentials) => api.post('/auth/login', credentials),
     register: (userData) => api.post('/auth/register', userData),
     getProfile: () => api.get('/auth/profile'),
@@ -101,14 +114,14 @@ export const authService = {
 };
 
 // AI Services
-export const aiService = {
+export const aiService = isDemoMode ? mockAiService : {
     chat: (data) => api.post('/ai/chat', data),
     analyzeInventory: (items) => api.post('/ai/analyze-inventory', { items }),
 };
 
 // External Recipe Services (Spoonacular)
 // Notification Endpoints
-export const notificationService = {
+export const notificationService = isDemoMode ? mockNotificationService : {
     getAll: () => api.get('/notifications'),
     markRead: (id) => api.put(`/notifications/${id}/read`),
     markReadAll: () => api.put('/notifications/read-all'),
@@ -119,13 +132,13 @@ export const notificationService = {
     getStats: () => api.get('/admin/notifications/stats')
 };
 
-export const externalRecipeService = {
+export const externalRecipeService = isDemoMode ? mockExternalRecipeService : {
     search: (params) => api.get('/external/recipes/search', { params }),
     getDetails: (id) => api.get(`/external/recipes/${id}`),
 };
 
 // Database Panel Services
-export const databaseService = {
+export const databaseService = isDemoMode ? mockDatabaseService : {
     getStats: () => api.get('/database/stats'),
     getTableData: (table) => api.get(`/database/${table}`),
     getRecord: (table, id) => api.get(`/database/${table}/${id}`),
@@ -135,7 +148,7 @@ export const databaseService = {
 };
 
 // System Services
-export const systemService = {
+export const systemService = isDemoMode ? mockSystemService : {
     getStats: () => api.get('/system/stats'),
 };
 
