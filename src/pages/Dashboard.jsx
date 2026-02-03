@@ -73,11 +73,32 @@ const Dashboard = () => {
     const fetchStats = async () => {
         setIsLoading(true);
         try {
+            console.log('📊 Fetching dashboard stats...');
             const response = await systemService.getStats();
+            console.log('✅ Stats received:', response.data);
+
+            if (!response || !response.data) {
+                throw new Error('Invalid response from stats service');
+            }
+
             setStats(response.data);
             setLastUpdated(new Date());
         } catch (error) {
-            console.error('Failed to fetch stats:', error);
+            console.error('❌ Failed to fetch stats:', error);
+            console.error('Error details:', {
+                message: error.message,
+                response: error.response,
+                stack: error.stack
+            });
+
+            // Set fallback empty stats to prevent crashes
+            setStats({
+                users: { total: 0, plans: [] },
+                inventory: { total: 0, expiringSoon: 0, expired: 0, locations: [] },
+                grocery: { estimatedBudget: 0 },
+                recipes: { total: 0, cuisines: [] },
+                recentActivity: { users: [], recipes: [], items: [] }
+            });
         } finally {
             setIsLoading(false);
         }
