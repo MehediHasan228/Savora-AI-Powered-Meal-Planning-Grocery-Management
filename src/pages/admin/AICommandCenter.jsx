@@ -25,9 +25,34 @@ import {
     Trash2,
     Maximize2
 } from 'lucide-react';
-import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_API_URL || '/api';
+import React, { useState, useEffect, useRef } from 'react';
+import {
+    Cpu,
+    Save,
+    RotateCcw,
+    Zap,
+    Target,
+    ShieldCheck,
+    MessageSquareQuote,
+    SlidersHorizontal,
+    Bot,
+    User as UserIcon,
+    Send,
+    Sparkles,
+    Settings2,
+    Terminal,
+    History,
+    ChevronRight,
+    Search,
+    Filter,
+    X,
+    CheckCircle2,
+    AlertCircle,
+    Copy,
+    Trash2,
+    Maximize2
+} from 'lucide-react';
+import { aiService } from '../../services/api';
 
 const AICommandCenter = () => {
     // State
@@ -59,10 +84,7 @@ const AICommandCenter = () => {
     useEffect(() => {
         const fetchConfig = async () => {
             try {
-                const token = localStorage.getItem('token');
-                const response = await axios.get(`${API_URL}/admin/ai/tuning`, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                const response = await aiService.getTuning();
                 setConfig(response.data);
             } catch (error) {
                 console.error('Failed to fetch AI config:', error);
@@ -86,10 +108,7 @@ const AICommandCenter = () => {
     const handleSave = async () => {
         setIsSaving(true);
         try {
-            const token = localStorage.getItem('token');
-            await axios.post(`${API_URL}/admin/ai/tuning`, config, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            await aiService.updateTuning(config);
             setHasChanges(false);
             setLastUpdated(new Date().toLocaleTimeString());
             addToast('AI Core recalibrated and synchronized.');
@@ -111,14 +130,11 @@ const AICommandCenter = () => {
         setIsTyping(true);
 
         try {
-            const token = localStorage.getItem('token');
             // Use current UI state for simulation testing
-            const response = await axios.post(`${API_URL}/ai/chat`, {
+            const response = await aiService.chat({
                 messages: chatHistory.filter(m => m.role !== 'ai' && m.role !== 'system').concat(userMsg),
                 systemPrompt: config.masterPrompt,
                 temperature: config.temperature
-            }, {
-                headers: { Authorization: `Bearer ${token}` }
             });
 
             setChatHistory(prev => [...prev, { role: 'ai', content: response.data.content }]);

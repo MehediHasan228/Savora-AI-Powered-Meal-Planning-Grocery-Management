@@ -245,15 +245,44 @@ export const mockAdminGroceryService = {
     getWaste: () => Promise.resolve({ data: { wastedItems: 5, wastedValue: 20 } }),
 };
 
+
 // --- Mock System & AI ---
 export const mockSystemService = {
     getStats: () => Promise.resolve({ data: { cpu: 15, memory: 40, uptime: 123456, activeUsers: 2 } }),
+    getLogs: () => Promise.resolve({
+        data: [
+            { id: 1, action: 'LOGIN', user: 'Demo User', ip: '192.168.1.1', timestamp: new Date().toISOString() },
+            { id: 2, action: 'UPDATE_INVENTORY', user: 'Admin', ip: '192.168.1.2', timestamp: new Date(Date.now() - 3600000).toISOString() }
+        ]
+    }),
+    getApiUsage: (period) => Promise.resolve({ data: Array.from({ length: 7 }, (_, i) => ({ date: `2023-01-0${i + 1}`, requests: Math.floor(Math.random() * 1000), errors: Math.floor(Math.random() * 10) })) }),
+    getCacheStats: () => Promise.resolve({ data: { hits: 5000, misses: 200, size: '50MB' } }),
+    clearCache: () => Promise.resolve({ data: { message: 'Cache cleared' } }),
+    clearCacheItem: (id) => Promise.resolve({ data: { message: `Cache item ${id} cleared` } }),
 };
 
 export const mockAiService = {
-    chat: (data) => new Promise(resolve => setTimeout(() => resolve({ data: { reply: "I'm a demo AI running in the browser! I can help you plan meals or manage inventory." } }), 1000)),
+    chat: (data) => new Promise(resolve => setTimeout(() => resolve({ data: { reply: "I'm a demo AI running in the browser! I can help you plan meals or manage inventory.", content: "I'm a demo AI running in the browser! I can help you plan meals or manage inventory." } }), 1000)),
     analyzeInventory: (items) => Promise.resolve({ data: { analysis: "You have a good mix of proteins and veggies." } }),
+    getTuning: () => Promise.resolve({ data: { model: 'gpt-4-turbo', temperature: 0.7, masterPrompt: 'You are a helpful culinary AI assistant.', matchPercentageThreshold: 80, expiryWeight: 1.5, userRatingWeight: 1.0 } }),
+    updateTuning: (config) => Promise.resolve({ data: { message: 'Configuration updated successfully (Demo Mode)' } }),
 };
+
+export const mockAdminDashboardService = {
+    getKpis: () => Promise.resolve({ data: { totalUsers: 150, activeSessions: 12, totalRecipes: 450, systemHealth: 98 } }),
+    getTrends: () => Promise.resolve({
+        data: [
+            { name: 'Mon', users: 10, activity: 50 },
+            { name: 'Tue', users: 15, activity: 65 },
+            { name: 'Wed', users: 20, activity: 45 },
+            { name: 'Thu', users: 25, activity: 80 },
+            { name: 'Fri', users: 30, activity: 90 },
+            { name: 'Sat', users: 40, activity: 100 },
+            { name: 'Sun', users: 35, activity: 85 }
+        ]
+    }),
+};
+
 
 // --- Mock Notifications ---
 export const mockNotificationService = {

@@ -12,7 +12,8 @@ import {
     mockNotificationService,
     mockAuthService,
     mockDatabaseService,
-    mockExternalRecipeService
+    mockExternalRecipeService,
+    mockAdminDashboardService
 } from './mockData';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
@@ -117,6 +118,8 @@ export const authService = isDemoMode ? mockAuthService : {
 export const aiService = isDemoMode ? mockAiService : {
     chat: (data) => api.post('/ai/chat', data),
     analyzeInventory: (items) => api.post('/ai/analyze-inventory', { items }),
+    getTuning: () => api.get('/admin/ai/tuning'),
+    updateTuning: (config) => api.post('/admin/ai/tuning', config),
 };
 
 // External Recipe Services (Spoonacular)
@@ -150,6 +153,17 @@ export const databaseService = isDemoMode ? mockDatabaseService : {
 // System Services
 export const systemService = isDemoMode ? mockSystemService : {
     getStats: () => api.get('/system/stats'),
+    getLogs: (params) => api.get('/admin/system/logs', { params }),
+    getApiUsage: (period) => api.get(`/admin/api-usage?period=${period}`),
+    getCacheStats: () => api.get('/admin/cache'),
+    clearCache: () => api.delete('/admin/cache-all'),
+    clearCacheItem: (id) => api.delete(`/admin/cache/${id}`),
+};
+
+// Admin Dashboard Services
+export const adminDashboardService = isDemoMode ? mockAdminDashboardService : {
+    getKpis: () => api.get('/admin/dashboard/kpis'),
+    getTrends: () => api.get('/admin/dashboard/trends'),
 };
 
 // Meal Plan Services
