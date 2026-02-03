@@ -25,33 +25,6 @@ import {
     Trash2,
     Maximize2
 } from 'lucide-react';
-import React, { useState, useEffect, useRef } from 'react';
-import {
-    Cpu,
-    Save,
-    RotateCcw,
-    Zap,
-    Target,
-    ShieldCheck,
-    MessageSquareQuote,
-    SlidersHorizontal,
-    Bot,
-    User as UserIcon,
-    Send,
-    Sparkles,
-    Settings2,
-    Terminal,
-    History,
-    ChevronRight,
-    Search,
-    Filter,
-    X,
-    CheckCircle2,
-    AlertCircle,
-    Copy,
-    Trash2,
-    Maximize2
-} from 'lucide-react';
 import { aiService } from '../../services/api';
 
 const AICommandCenter = () => {
