@@ -1,8 +1,22 @@
 import axios from 'axios';
+import { mockMealPlanService } from './mockData';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
+// Check if we are running in a demo environment (GitHub Pages)
+// Using safer check that doesn't rely solely on window for build time safety
+const isDemoMode = typeof window !== 'undefined' && (
+    window.location.hostname.includes('github.io') ||
+    window.location.hostname.includes('netlify.app')
+);
+
+// Log for debugging
+if (isDemoMode) {
+    console.log('🚀 DEMO MODE ACTIVE: Using mock services');
+}
+
 const api = axios.create({
+    // ... (rest of file)
     baseURL: API_URL,
     headers: {
         'Content-Type': 'application/json',
@@ -126,11 +140,6 @@ export const systemService = {
 };
 
 // Meal Plan Services
-// Check if we are running in a demo environment (GitHub Pages)
-const isDemoMode = window.location.hostname.includes('github.io') || window.location.hostname.includes('netlify.app');
-
-import { mockMealPlanService } from './mockData';
-
 export const mealPlanService = isDemoMode ? mockMealPlanService : {
     getWeekPlan: (startDate, endDate) => api.get('/meal-plan', { params: { startDate, endDate } }),
     generateWeekPlan: (startDate) => api.post('/meal-plan/generate', { startDate }),
