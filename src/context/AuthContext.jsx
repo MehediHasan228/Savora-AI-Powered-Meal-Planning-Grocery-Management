@@ -16,6 +16,12 @@ export const AuthProvider = ({ children }) => {
     const checkAuth = async () => {
         setIsLoading(true);
         try {
+            // Check if we're in demo mode (GitHub Pages or Netlify)
+            const isDemoMode = typeof window !== 'undefined' && (
+                window.location.hostname.includes('github.io') ||
+                window.location.hostname.includes('netlify.app')
+            );
+
             const token = localStorage.getItem('token');
 
             if (token) {
@@ -23,16 +29,49 @@ export const AuthProvider = ({ children }) => {
                 const response = await authService.getProfile();
                 setIsAuthenticated(true);
                 setAuthUser(response.data);
+            } else if (isDemoMode) {
+                // Auto-login in demo mode
+                console.log('🎭 Demo Mode: Auto-authenticating user');
+                const demoUser = {
+                    id: '1',
+                    name: 'Demo User',
+                    email: 'demo@savora.app',
+                    role: 'admin'
+                };
+                localStorage.setItem('token', 'demo-token');
+                setIsAuthenticated(true);
+                setAuthUser(demoUser);
             } else {
                 setIsAuthenticated(false);
                 setAuthUser(null);
             }
         } catch (error) {
             console.error('Auth check error:', error);
-            // If profile fetch fails (e.g. token expired), clear storage
-            localStorage.removeItem('token');
-            setIsAuthenticated(false);
-            setAuthUser(null);
+
+            // Check if we're in demo mode for fallback
+            const isDemoMode = typeof window !== 'undefined' && (
+                window.location.hostname.includes('github.io') ||
+                window.location.hostname.includes('netlify.app')
+            );
+
+            if (isDemoMode) {
+                // Even if there's an error, auto-login in demo mode
+                console.log('🎭 Demo Mode: Auto-authenticating after error');
+                const demoUser = {
+                    id: '1',
+                    name: 'Demo User',
+                    email: 'demo@savora.app',
+                    role: 'admin'
+                };
+                localStorage.setItem('token', 'demo-token');
+                setIsAuthenticated(true);
+                setAuthUser(demoUser);
+            } else {
+                // If profile fetch fails (e.g. token expired), clear storage
+                localStorage.removeItem('token');
+                setIsAuthenticated(false);
+                setAuthUser(null);
+            }
         } finally {
             setIsLoading(false);
         }
