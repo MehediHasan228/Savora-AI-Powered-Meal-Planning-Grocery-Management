@@ -1,0 +1,194 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("admin")
+  status    String   @default("Active")
+  plan      String   @default("Free")
+  avatar    String?
+  openaiKey String?
+  spoonacularKey String?
+  preferences String?
+  items        Item[]
+  recipes      Recipe[]
+  groceryItems GroceryItem[]
+  mealPlans    MealPlan[]
+  notifications Notification[]
+  notificationSettings NotificationSetting?
+  auditLogs    AuditLog[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Notification {
+  id           Int      @id @default(autoincrement())
+  userId       Int
+  user         User     @relation(fields: [userId], references: [id])
+  title        String
+  message      String
+  type         String   // "EXPIRY", "GROCERY", "MEAL", "ADMIN", "UPDATE"
+  isRead       Boolean  @default(false)
+  activityLink String?  // Optional link to a specific page or item
+  createdAt    DateTime @default(now())
+}
+
+model NotificationSetting {
+  id                Int      @id @default(autoincrement())
+  userId            Int      @unique
+  user              User     @relation(fields: [userId], references: [id])
+  expiryAlerts      Boolean  @default(true)
+  groceryReminders  Boolean  @default(true)
+  mealSuggestions   Boolean  @default(true)
+  silentHoursStart  String?  // e.g., "22:00"
+  silentHoursEnd    String?  // e.g., "07:00"
+  updatedAt         DateTime @updatedAt
+}
+
+model Item {
+  id            Int              @id @default(autoincrement())
+  name          String
+  category      String           @default("General")
+  qty           String
+  expiry        DateTime?
+  status        String           @default("Fresh")  // "Fresh", "Expiring Soon", "Expired"
+  location      String?          @default("Pantry") // Legacy field
+  storageZone   String           @default("Pantry") // "Pantry", "Fridge", "Freezer"
+  barcode       String?
+  addedDate     DateTime         @default(now())
+  usageCount    Int              @default(0)
+  user          User             @relation(fields: [userId], references: [id])
+  userId        Int
+  reminders     ExpiryReminder[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Recipe {
+  id           Int      @id @default(autoincrement())
+  title        String
+  cuisine      String
+  time         Int
+  calories     Int
+  image        String
+  ingredients  String   // JSON string of ingredients
+  instructions String
+  user         User?    @relation(fields: [userId], references: [id])
+  userId       Int?
+  mealPlans    MealPlan[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model GroceryItem {
+  id        Int      @id @default(autoincrement())
+  name      String
+  category  String
+  isBought  Boolean  @default(false)
+  qty       Float    @default(1)
+  unit      String   @default("pcs")
+  buyStatus String   @default("NOW") // "NOW" or "LATER"
+  source    String   @default("MANUAL") // "MANUAL", "MEAL_PLAN", "RESTOCK"
+  boughtAt  DateTime?
+  originalRecipeId Int?
+  price     Float    @default(0)
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model MealPlan {
+  id        Int      @id @default(autoincrement())
+  date      DateTime
+  slot      String   // "breakfast", "lunch", "dinner", "snack"
+  recipe    Recipe?  @relation(fields: [recipeId], references: [id])
+  recipeId  Int?
+  isCustom  Boolean  @default(false)
+  customItem String? // JSON for non-recipe items
+  servings  Int      @default(1)
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+
+  @@unique([userId, date, slot])
+}
+
+model RecipeCache {
+  id              Int      @id @default(autoincrement())
+  spoonacularId   Int      @unique
+  title           String
+  image           String?
+  cuisine         String?
+  cookTime        Int?
+  calories        Int?
+  protein         Float?
+  carbs           Float?
+  fat             Float?
+  fiber           Float?
+  ingredients     String   // JSON
+  instructions    String
+  popularity      Int      @default(0) // Track usage count
+  lastFetched     DateTime @default(now())
+  expiresAt       DateTime
+  createdAt       DateTime @default(now())
+}
+
+model ApiUsageLog {
+  id         Int      @id @default(autoincrement())
+  endpoint   String
+  userId     Int?
+  cost       Float    @default(1)
+  success    Boolean
+  errorMsg   String?
+  createdAt  DateTime @default(now())
+}
+
+model ExpiryReminder {
+  id           Int      @id @default(autoincrement())
+  itemId       Int
+  item         Item     @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  reminderDate DateTime
+  type         String   // "7_days", "3_days", "today"
+  sent         Boolean  @default(false)
+  createdAt    DateTime @default(now())
+}
+
+model BarcodeProduct {
+  id            Int      @id @default(autoincrement())
+  barcode       String   @unique
+  name          String
+  category      String
+  defaultExpiry Int      // Days
+  learningCount Int      @default(1)
+  lastUsed      DateTime @default(now())
+}
+model AuditLog {
+  id         Int      @id @default(autoincrement())
+  adminId    Int
+  admin      User     @relation(fields: [adminId], references: [id])
+  action     String   // "CREATE", "UPDATE", "DELETE", "BROADCAST", "AI_OVERRIDE"
+  module     String   // "USERS", "CONTENT", "AI", "SYSTEM"
+  targetId   String?  // ID of the affected resource
+  oldData    String?  // JSON snapshot
+  newData    String?  // JSON snapshot
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+}
+
+model SystemSetting {
+  key       String   @id
+  value     String   // JSON string
+  updatedAt DateTime @updatedAt
+}
