@@ -256,7 +256,18 @@ export const mockSystemService = {
         ]
     }),
     getApiUsage: (period) => Promise.resolve({ data: Array.from({ length: 7 }, (_, i) => ({ date: `2023-01-0${i + 1}`, requests: Math.floor(Math.random() * 1000), errors: Math.floor(Math.random() * 10) })) }),
-    getCacheStats: () => Promise.resolve({ data: { hits: 5000, misses: 200, size: '50MB' } }),
+    getCacheStats: () => Promise.resolve({
+        data: {
+            hits: 5000,
+            misses: 200,
+            size: '50MB',
+            recipes: [
+                { id: 101, title: 'Mock Spaghetti Carbonara', popularity: 95, calories: 600, expiresAt: new Date(Date.now() + 86400000).toISOString() },
+                { id: 102, title: 'Demo Chicken Curry', popularity: 82, calories: 450, expiresAt: new Date(Date.now() - 3600000).toISOString() },
+                { id: 103, title: 'Virtual Veggie Stir Fry', popularity: 70, calories: 350, expiresAt: new Date(Date.now() + 172800000).toISOString() }
+            ]
+        }
+    }),
     clearCache: () => Promise.resolve({ data: { message: 'Cache cleared' } }),
     clearCacheItem: (id) => Promise.resolve({ data: { message: `Cache item ${id} cleared` } }),
 };

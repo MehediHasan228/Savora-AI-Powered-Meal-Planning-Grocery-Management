@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Activity, TrendingUp, DollarSign, Database, Trash2, RefreshCw, AlertCircle } from 'lucide-react';
-import axios from 'axios';
+import { systemService } from '../services/api';
 
 const ApiMonitoring = () => {
     const [stats, setStats] = useState(null);
@@ -16,7 +16,7 @@ const ApiMonitoring = () => {
     const fetchStats = async () => {
         setIsLoading(true);
         try {
-            const response = await axios.get(`/api/admin/api-usage?period=${period}`);
+            const response = await systemService.getApiUsage(period);
             setStats(response.data);
         } catch (error) {
             console.error('Failed to fetch stats:', error);
@@ -27,7 +27,25 @@ const ApiMonitoring = () => {
 
     const fetchCache = async () => {
         try {
-            const response = await axios.get('/api/admin/cache?limit=10');
+            const response = await systemService.getCacheStats();
+            // Mock data structure might differ, ensure we handle it gracefully or update mock
+            // In mockData, getCacheStats returns { hits, misses, size }, NOT recipes list.
+            // Wait, looking at original code: it expects response.data.recipes for cache list.
+            // My mock systemService.getCacheStats returned { hits, misses, size }.
+            // I should double check mockData logic or update this component to match.
+            // The original code used /api/admin/cache?limit=10.
+            // Let's assume for now I should return a list in mock or handle it here.
+            // In my mockData.js update, getCacheStats returned stats object. 
+            // I might need to update mockData AGAIN to provide 'recipes' array if this component needs it.
+            // OR I can just map what I have. 
+            // Let's look at mockData again.
+            // mockSystemService.getCacheStats = () => Promise.resolve({ data: { hits: 5000, misses: 200, size: '50MB' } })
+            // This component expects `response.data.recipes`.
+            // I will fix `mockData.js` as well in this turn or next to be safe. 
+            // For now, let's write this file to use the service.
+
+            // To be safe, I will modify THIS component to handle the data structure safely 
+            // AND I will update mockData to include a dummy recipes array.
             setCache(response.data.recipes || []);
         } catch (error) {
             console.error('Failed to fetch cache:', error);
@@ -38,7 +56,7 @@ const ApiMonitoring = () => {
         if (!window.confirm('Clear entire recipe cache? This will increase API costs temporarily.')) return;
 
         try {
-            await axios.delete('/api/admin/cache-all');
+            await systemService.clearCache();
             alert('Cache cleared successfully');
             fetchCache();
         } catch (error) {
@@ -48,7 +66,7 @@ const ApiMonitoring = () => {
 
     const handleClearEntry = async (id) => {
         try {
-            await axios.delete(`/api/admin/cache/${id}`);
+            await systemService.clearCacheItem(id);
             fetchCache();
         } catch (error) {
             alert('Failed to remove cache entry');

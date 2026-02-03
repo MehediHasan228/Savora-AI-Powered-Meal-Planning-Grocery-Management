@@ -13,7 +13,7 @@ import {
     ArrowUpRight,
     ArrowDownRight
 } from 'lucide-react';
-import axios from 'axios';
+import { adminDashboardService } from '../../services/api';
 import {
     BarChart,
     Bar,
@@ -27,8 +27,6 @@ import {
     Cell
 } from 'recharts';
 
-const API_URL = import.meta.env.VITE_API_URL || '/api';
-
 const AdminDashboard = () => {
     const [kpis, setKpis] = useState(null);
     const [trends, setTrends] = useState([]);
@@ -39,10 +37,9 @@ const AdminDashboard = () => {
         const fetchData = async () => {
             setIsLoading(true);
             try {
-                const token = localStorage.getItem('token');
                 const [kpiRes, trendRes] = await Promise.all([
-                    axios.get(`${API_URL}/admin/dashboard/kpis`, { headers: { Authorization: `Bearer ${token}` } }),
-                    axios.get(`${API_URL}/admin/dashboard/trends`, { headers: { Authorization: `Bearer ${token}` } })
+                    adminDashboardService.getKpis(),
+                    adminDashboardService.getTrends()
                 ]);
                 setKpis(kpiRes.data);
                 setTrends(trendRes.data);

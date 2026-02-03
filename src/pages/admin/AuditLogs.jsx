@@ -14,9 +14,7 @@ import {
     AlertCircle,
     Eye
 } from 'lucide-react';
-import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_API_URL || '/api';
+import { systemService } from '../../services/api';
 
 const AuditLogs = () => {
     const [logs, setLogs] = useState([]);
@@ -28,11 +26,8 @@ const AuditLogs = () => {
         const fetchLogs = async () => {
             setIsLoading(true);
             try {
-                const token = localStorage.getItem('token');
-                // Creating a dedicated endpoint for audit logs in the backend (next step)
-                const response = await axios.get(`${API_URL}/admin/system/logs`, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                // Using systemService instead of direct axios call
+                const response = await systemService.getLogs({ filter: filterModule });
                 setLogs(response.data);
             } catch (error) {
                 console.error('Error fetching logs:', error);
@@ -41,7 +36,7 @@ const AuditLogs = () => {
             }
         };
         fetchLogs();
-    }, []);
+    }, [filterModule]); // Added filterModule dependency to refresh on filter change
 
     const filteredLogs = filterModule === 'All'
         ? logs
@@ -74,8 +69,8 @@ const AuditLogs = () => {
                             key={mod}
                             onClick={() => setFilterModule(mod)}
                             className={`px-4 py-2 rounded-xl text-xs font-black transition-all ${filterModule === mod
-                                    ? 'bg-gray-900 text-white shadow-lg'
-                                    : 'text-gray-400 hover:text-gray-700'
+                                ? 'bg-gray-900 text-white shadow-lg'
+                                : 'text-gray-400 hover:text-gray-700'
                                 }`}
                         >
                             {mod}
