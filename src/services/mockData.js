@@ -248,7 +248,60 @@ export const mockAdminGroceryService = {
 
 // --- Mock System & AI ---
 export const mockSystemService = {
-    getStats: () => Promise.resolve({ data: { cpu: 15, memory: 40, uptime: 123456, activeUsers: 2 } }),
+    getStats: () => Promise.resolve({
+        data: {
+            cpu: 15,
+            memory: 40,
+            uptime: 123456,
+            activeUsers: 2,
+            users: {
+                total: 42,
+                plans: [
+                    { plan: 'Free', _count: { id: 25 } },
+                    { plan: 'Pro', _count: { id: 12 } },
+                    { plan: 'Enterprise', _count: { id: 5 } }
+                ]
+            },
+            inventory: {
+                total: 156,
+                expiringSoon: 8,
+                expired: 2,
+                locations: [
+                    { storageZone: 'Fridge', _count: { id: 45 } },
+                    { storageZone: 'Pantry', _count: { id: 67 } },
+                    { storageZone: 'Freezer', _count: { id: 32 } },
+                    { location: 'Other', _count: { id: 12 } }
+                ]
+            },
+            grocery: {
+                estimatedBudget: 247.50,
+                totalItems: 23,
+                checkedItems: 8
+            },
+            recipes: {
+                total: 89,
+                cuisines: [
+                    { cuisine: 'Italian', _count: { id: 23 } },
+                    { cuisine: 'Asian', _count: { id: 18 } },
+                    { cuisine: 'Mexican', _count: { id: 15 } }
+                ]
+            },
+            recentActivity: {
+                users: [
+                    { name: 'Alice Johnson', createdAt: new Date(Date.now() - 300000).toISOString() },
+                    { name: 'Bob Smith', createdAt: new Date(Date.now() - 600000).toISOString() }
+                ],
+                recipes: [
+                    { title: 'Spaghetti Carbonara', createdAt: new Date(Date.now() - 120000).toISOString() },
+                    { title: 'Chicken Tikka Masala', createdAt: new Date(Date.now() - 450000).toISOString() }
+                ],
+                items: [
+                    { name: 'Milk', storageZone: 'Fridge', createdAt: new Date(Date.now() - 180000).toISOString() },
+                    { name: 'Pasta', location: 'Pantry', createdAt: new Date(Date.now() - 360000).toISOString() }
+                ]
+            }
+        }
+    }),
     getLogs: () => Promise.resolve({
         data: [
             { id: 1, action: 'LOGIN', user: 'Demo User', ip: '192.168.1.1', timestamp: new Date().toISOString() },
